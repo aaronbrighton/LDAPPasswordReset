@@ -1,0 +1,64 @@
+<?php
+if (strlen($_GET['key']) == 64 && ctype_alnum($_GET['key']))
+{
+?>
+<!--
+////////////////////////////////////////////////////
+// update.php                                     //
+//                                                //
+// Author: Aaron Brighton                         //
+// Last Modified: 2015-09-07                      //
+//                                                //
+// This page collects the users new LDAP password //
+// after receiving the verification key.  This    //
+// page uses AJAX to post to reset.php            //
+////////////////////////////////////////////////////
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Reset Your Ldap Password (<%= $envFullName %>)</title>
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="stylesheet" href="css/styles.css" type="text/css" />
+		<script type="text/javascript" src="js/scripts.js"></script>
+	</head>
+	<body>
+		<table cellspacing="0" cellpadding="0" border="0" width="100%">
+			<tr>
+				<td width="400" align="center">
+					<img src="images/ldap-worm.png" alt="OpenLDAP Worm" title="OpenLDAP Worm" id="worm" />
+				</td>
+				<td align="center">
+					
+					<table cellspacing="15" cellpadding="0" border="0" width="100%" style="height:600px;">
+						<tr>
+							<td align="center" style="height:200px;">
+								<p id="title">
+                                                    			Reset Your Ldap Password (<%= $envFullName %>)
+                                                		</p>
+							</td>	
+						</tr>
+						<tr>
+							<td align="center" style="vertical-align:top;" id="status">
+									Please enter your newly desired LDAP password below, until you've met the complexity requirements the boxes will remain red.
+								<p>
+									Enter your new LDAP password: <input type="password" name="ldapPassword" id="ldapPassword" onkeyup="validateField(this, event);" />
+								</p>
+								<p>
+									Confirm your new LDAP password: <input type="password" name="ldapPasswordConfirm" id="ldapPasswordConfirm" onkeyup="validateField(this, event);" />
+
+								</p>
+								<p>
+									<input type="button" name="btnUpdate" value="Update" id="button" onclick="send_password(document.getElementById('ldapPassword').value, document.getElementById('ldapPasswordConfirm').value, getUrlVars()['key']); " />	
+								</p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>
+<?php
+}
+?>

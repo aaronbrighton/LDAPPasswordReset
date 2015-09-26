@@ -1,0 +1,57 @@
+/*
+////////////////////////////////////////////////////
+// styles.css                                     //
+//                                                //
+// Author: Aaron Brighton                         //
+// Last Modified: 2015-09-07                      //
+//                                                //
+// This is the stylesheet used by all of the      //
+// pages that provide an interface to this apps   //
+// users.                                         //
+////////////////////////////////////////////////////
+*/
+
+
+body 
+{
+	background-color:#161616;
+	background-image:url('../images/ldap-bg.png');
+	background-position:top;
+	background-repeat:repeat-x;
+	font-family:'Myriad Pro', 'PT Sans', sans-serif;
+	color:#ededed;
+}
+
+#worm
+{
+	opacity: 0.15;
+	filter: alpha(opacity=15);
+}
+
+@font-face 
+{
+	font-family:'PT Sans';
+	font-style:normal;
+	font-weight:700;
+	src:local('PT Sans Bold'), local('PTSans-Bold'), url(../ptsans.woff) format('woff');
+}
+
+#title 
+{
+	font-size:48px;
+	line-height:48px;
+}
+
+input[type="text"], input[type="password"]
+{
+	border:3px #232323 solid;
+        width:200px;
+        margin-left:15px;
+}
+
+input[type="button"]
+{
+	border:3px #232323 solid;
+	font-family:'Myriad Pro', 'PT Sans', sans-serif;
+	margin-left:15px;
+}

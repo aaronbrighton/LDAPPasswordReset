@@ -1,0 +1,2 @@
+/var/www/var/www/includes/messages/rpupdate.enc IN_MODIFY /usr/bin/php /opt/bin/ldapreset.php
+/var/www/var/www/includes/messages/rrequests.enc IN_MODIFY /usr/bin/php /opt/bin/ldapreset.php

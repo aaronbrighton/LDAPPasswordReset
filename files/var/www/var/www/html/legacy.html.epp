@@ -1,0 +1,52 @@
+<!-- 
+////////////////////////////////////////////////////
+// legacy.html                                    //
+//                                                //
+// Author: Aaron Brighton                         //
+// Last Modified: 2015-09-07                      //
+//                                                //
+// This page collects the username for the legacy //
+// password reset method, javascript validation   //
+// is completed then passed to request.php using  //
+// AJAX.                                          //
+////////////////////////////////////////////////////
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Reset Your Ldap Password (<$= $envFullName %>)</title>
+		<link rel="shortcut icon" href="favicon.ico" />
+		<link rel="stylesheet" href="css/styles.css" type="text/css" />
+		<script type="text/javascript" src="js/scripts.js"></script>
+	</head>
+	<body>
+		<table cellspacing="0" cellpadding="0" border="0" width="100%">
+			<tr>
+				<td width="400" align="center">
+					<img src="images/ldap-worm.png" alt="OpenLDAP Worm" title="OpenLDAP Worm" id="worm" />
+				</td>
+				<td align="center">
+					
+					<table cellspacing="15" cellpadding="0" border="0" width="100%" style="height:600px;">
+						<tr>
+							<td align="center" style="height:200px;">
+								<p id="title">
+                                                    			Reset Your Ldap Password (<%= $envFullName %>)
+                                                		</p>
+							</td>	
+						</tr>
+						<tr>
+							<td align="center" style="vertical-align:top;" id="status">
+								<p>
+									Enter your LDAP username: <input type="text" name="ldapUsername" id="ldapUsername" onkeyup="validateField(this, event);" /></p>
+								<p>
+									<input type="button" name="btnReset" value="Reset!" id="button" onclick="send_username(document.getElementById('ldapUsername').value);" />
+								</p>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

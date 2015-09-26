@@ -1,0 +1,7 @@
+Greetings,
+
+A request was made to reset the LDAP password associated with your account.  If this was you who requested the password update please click on the link below to be taken to a page that will let you update your LDAP password.
+
+https://<%= $fqdnHostname %>/update.php?key={$_KEY}
+
+If you didn't request this password update, feel free to ignore this email, if you keep receiving these emails unsolicited, please notify operations to investigate the source of the requests for your user.

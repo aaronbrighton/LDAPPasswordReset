@@ -1,0 +1,17 @@
+/var/log/lprt.log {
+	daily
+	rotate 7
+	compress
+	delaycompress
+	missingok
+	create 600 root root 
+}
+
+/var/www/var/www/includes/upriv-lprt.log {
+        daily
+        rotate 7
+        compress
+        delaycompress
+        missingok
+        create 600 root www-data
+}

@@ -1,0 +1,8 @@
+base dc=xx,dc=xx,dc=example,dc=com
+uri ldap://<%= $ldapServerPrimary %>/ ldap://<%= $ldapServerSecondary %>/
+ldap_version 3
+pam_password md5
+ssl start_tls
+tls_checkpeer no
+bind_timelimit 2
+nss_initgroups_ignoreusers backup,bin,clamav,daemon,games,gnats,irc,landscape,libuuid,list,lp,mail,man,messagebus,news,ntp,postfix,proxy,puppet,root,snmp,sshd,sync,sys,syslog,uucp,www-data

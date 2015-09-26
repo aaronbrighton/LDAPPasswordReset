@@ -1,0 +1,163 @@
+<?php
+////////////////////////////////////////////////////
+// Authorize.class.php                            //
+//                                                //
+// Author: Aaron Brighton                         //
+// Last Modified: 2015-08-23                      //
+//                                                //
+// This class takes care of performing the        //
+// verification process (via email), verifying    //
+// the new password and key are valid.            //
+////////////////////////////////////////////////////
+
+class Authorize {
+
+	private $db;
+
+	// Constructor function, called on object initialization.
+	function __construct()
+	{
+		// Let's get the current database, and load it into memory.
+		$this->db = $this->get_db();
+	}
+	
+	// This function is responsible for generating the verification key, sending the email, and updating the key store database.
+	public function send_email($username, $email)
+	{
+		// Generate a key to be used as unique identifier/verification key for this request.
+		$key = hash('sha256', bin2hex(openssl_random_pseudo_bytes(32)));
+	
+		// Create an entry for this user's verification key in the database.
+		$this->db[$key]['username'] = $username;
+		$this->db[$key]['time'] = time();
+		
+		// Save the database.
+		$this->put_db();
+
+		// Let's grab the email template.
+		$fp = fopen(EMAIL_TEMPLATE_PATH, 'r');
+		$template = fread($fp, filesize(EMAIL_TEMPLATE_PATH)+1);
+		fclose($fp);
+
+		$message = str_replace('{$_KEY}', $key, $template);
+
+		// Send email with verification key.
+		mail($email, 'LDAP Password Reset Request', $message, 'From: LPRT (<%= $envFullName %>) <<%= $alertsFromEmail%>>');
+		
+		return true;
+	}
+	
+	// This function takes the key as an argument and looks up the key in the database and returns corresponding username if it is found.
+	public function is_key_authorized($key)
+	{
+		// Let's compare whether this key already exists in the database.
+		if (isset($this->db[$key]))
+		{
+			// There is an entry in the database for the supplied key, let's return the username.
+			return $this->db[$key]['username'];
+		}
+		else
+		{
+			// There is no entry in the database for this key.
+			return false;
+		}
+	}
+	
+	// This function is used to remove a specific key from the database.
+	public function remove_key($key)
+	{
+		// Unset the entry in the database for this key.
+		unset($this->db[$key]);
+		
+		// Save the database.
+		$this->put_db();
+	
+		return true;	
+	}
+	
+	// The purpose of this function is to clear any reset key entries from our database that are older than 1 hour.
+	public function maintenance()
+	{
+		// Check to make sure there is atleast one entry in the database.
+		if ($this->db !== false)
+		{
+
+			// Let's get the time an hour ago.
+			$timeAnHourAgo = time()-3600;
+			
+			// Let's loop through the database.
+			foreach ($this->db as $key => $value)
+			{
+				// Check the time value, to see if it's older than 1 hour.
+				if ($value['time'] < $timeAnHourAgo)
+				{
+					// This entry is over an hour old, let's remove it from the database.
+					unset($this->db[$key]);
+				}
+			}
+		
+			// Save the database.
+			$this->put_db();
+		}
+	}
+
+	// The purpose of this function is to get the key store database, and return it's contents as an array.
+	private function get_db()
+	{
+		// Open the database, and retrieve it's contents.
+		$fp = fopen(KEY_STORE_DB_PATH, 'r');
+		$dbRaw = fread($fp, filesize(KEY_STORE_DB_PATH)+1);
+		fclose($fp);
+
+		// Explode the contents of the database to get individual entries in an array.
+		$dbLines = explode("\n", $dbRaw);
+		
+		// Loop through each of the lines, so we can interpret the data into an array.
+		for ($i=0;$i<count($dbLines);$i++)
+		{
+			// Explode the line, so we have each value in an array.
+			$dbLine = explode(',', $dbLines[$i]);
+			
+			// Make sure this isn't an empty line.
+			if ($dbLine[0] != '')
+			{
+				// Construct this database entry in our db array.
+	                        $db[$dbLine[0]]['username'] = $dbLine[1];
+        	                $db[$dbLine[0]]['time'] = $dbLine[2];
+			}
+		}
+		
+		// Check to see if the database has any entries.
+		if (isset($db))
+		{
+			// There are entries in the database, return the database.
+			return $db;
+		}
+		else
+		{
+			// The database has no entries, return false.
+			return false;
+		}
+	}
+
+	// The purpose of this function is to convert an array to key store db format and save it.
+	private function put_db()
+	{
+		$dbRaw='';
+
+		// Loop through all elements in the database array.
+		foreach ($this->db as $key => $value)
+		{
+			// Generate db line for this entry.
+			$dbRaw .= $key.','.$value['username'].','.$value['time']."\n";
+		}
+
+		// Write database to file.
+		$fp = fopen(KEY_STORE_DB_PATH, 'w');
+		fwrite($fp, $dbRaw);
+		fclose($fp);
+
+		return true;
+	}
+}
+?>

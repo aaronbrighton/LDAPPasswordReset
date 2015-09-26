@@ -1,0 +1,107 @@
+#
+# Shorewall version 4.0 - Sample Rules File for one-interface configuration.
+# Copyright (C) 2006 by the Shorewall Team
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# See the file README.txt for further details.
+#------------------------------------------------------------------------------------------------------------
+# For information on entries in this file, type "man shorewall-rules"
+######################################################################################################################################################################################################
+#ACTION		SOURCE		DEST		PROTO	DEST	SOURCE		ORIGINAL	RATE		USER/	MARK	CONNLIMIT	TIME		HEADERS		SWITCH		HELPER
+#							PORT	PORT(S)		DEST		LIMIT		GROUP
+#SECTION ALL
+SECTION ESTABLISHED
+
+## ESTABLISHED INBOUND ##
+
+# Permit https
+ACCEPT	net	$FW	tcp	443	513:65535
+
+# Permit ssh
+ACCEPT	net	$FW	tcp	22	513:65535
+
+# Permit LDAP from the ldap servers.
+ACCEPT	net:<%= $ldapServerPrimary %>	$FW	tcp	513:65535	389
+ACCEPT	net:<%= $ldapServerSecondary %>	$FW	tcp	513:65535	389
+
+# Pemit dns traffic from dns server
+ACCEPT	net:<%= $dns %>	$FW	udp	513:65535	53
+
+# Permit ntp traffic from ntp server
+ACCEPT net:<%= $ntp %>	$FW	udp	513:65535	123
+
+# Permit web proxy traffic from web proxy
+ACCEPT net:<%= $httpProxy %>	$FW	tcp	513:65535	3128
+
+# Permit smtp traffic from smtp relay
+ACCEPT net:<%= $smtpRelay %>	$FW	tcp	513:65535	25
+
+## ESTABLISHED OUTBOUND ##
+
+# Permit https traffic outbound
+ACCEPT	$FW	net	tcp	513:65535	443
+
+# Permit ssh traffic outbound
+ACCEPT $FW	net	tcp	513:65535	22
+
+# Permit ldap traffic outbound to ldap servers
+ACCEPT $FW	net:<%= $ldapServerPrimary %>	tcp	389	513:65535
+ACCEPT $FW	net:<%= $ldapServerSecondary %>	tcp	389	513:65535
+
+# Permit dns traffic outbound to dns
+ACCEPT $FW	net:<%= $dns %>	udp	53	513:65535
+
+# Permit ntp traffic outbound to ntp server
+ACCEPT $FW	net:<%= $ntp %>	udp	123	123:65535
+
+# Permit web proxy traffic outbound to web proxy
+ACCEPT $FW	net:<%= $httpProxy %>	tcp	3128	513:65535
+
+# Permit smtp traffic outbound to smtpRelay
+ACCEPT $FW	net:<%= $smtpRelay %>	tcp	25	513:65535
+
+#SECTION RELATED
+#SECTION INVALID
+#SECTION UNTRACKED
+SECTION NEW
+
+## NEW INBOUND ##
+# Drop packets in the INVALID state
+
+Invalid(DROP)  net    	        $FW		tcp
+
+# Drop Ping from the "bad" net zone.. and prevent your log from being flooded..
+
+Ping(ACCEPT)	net		$FW
+
+# Permit all ICMP traffic FROM the firewall TO the net zone
+
+#ACCEPT		$FW		net		icmp
+
+# Permit all HTTPS traffic FROM the the net zone
+ACCEPT	net	$FW	tcp	443	513:65535
+
+# Permit all SSH traffic FROM the net zone
+ACCEPT	net	$FW	tcp	22	513:65535
+
+## NEW OUTBOUND ##
+
+# Allow the root user on this server to communicate to the ldap servers.
+ACCEPT	$FW	net:<%= $ldapServerPrimary %>/32	tcp	389	513:65535	-	-	root
+ACCEPT	$FW	net:<%= $ldapServerSecondary %>/32	tcp	389	513:65535	-	-	root
+
+# Allow ntp,clamav,root on this server to communicate to dns01 for DNS
+ACCEPT	$FW	net:<%= $dns %>/32	udp	53	513:65535	-	-	root,ntp,clamav
+
+# Allow ntp,root to communicate with xinternal01 for NTP
+ACCEPT	$FW	net:<%= $ntp %>/32	udp	123	123:65535	-	-	root,ntp
+
+# Allow clamav,root to communicate to the web proxy
+ACCEPT $FW	net:<%= $httpProxy %>/32	tcp	3128	513:65535	-	-	root,clamav
+
+# Allow postfix,root to communicate to smtp relay
+ACCEPT	$FW	net:<%= $smtpRelay %>/32	tcp	25	513:65535	-	-	root,postfix

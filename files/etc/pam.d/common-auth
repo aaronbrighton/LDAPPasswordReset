@@ -1,0 +1,5 @@
+# This file is managed by Puppet - any manual edits will be lost
+
+auth optional     pam_group.so
+auth sufficient   pam_ldap.so
+auth required     pam_unix.so nullok_secure try_first_pass

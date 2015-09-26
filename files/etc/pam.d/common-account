@@ -1,0 +1,4 @@
+# This file is managed by Puppet - any manual edits will be lost
+
+account sufficient   pam_ldap.so
+account required     pam_unix.so
